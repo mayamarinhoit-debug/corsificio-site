@@ -1292,7 +1292,7 @@ h1.title em{
 }
 </style>
 <!-- FIX: leitura de PDF direto no navegador, sem precisar de backend novo pra isso -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <!-- FIX PRODUTO 2: captura o certificado como imagem, 100% no navegador -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -4006,7 +4006,7 @@ async function handleMaterialFile(evt){
       text = await file.text();
     } else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
       if (!window['pdfjsLib']) throw new Error('pdfjs non disponibile');
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.js';
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       const buf = await file.arrayBuffer();
       const pdf = await window.pdfjsLib.getDocument({ data: buf }).promise;
       const pages = [];

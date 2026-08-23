@@ -1596,7 +1596,7 @@ const I18N = {
     planMensileTagline: '15 corsi Completo al mese, per chi genera con frequenza',
     mensileFeature1: '15 generazioni "Completo" incluse al mese', mensileFeature2: 'Extra disponibili come acquisto singolo', mensileFeature3: 'Gestisci o cancella quando vuoi',
     btnSubscribeMonthly: 'Abbonati', btnManageSubscription: 'Gestisci abbonamento', usedThisMonthLabel: 'usati questo mese', subscriptionActivatedMsg: 'Abbonamento attivato! Puoi generare i tuoi corsi ora.',
-    quotaEsgotataTitle: 'Hai usato tutte le generazioni del mese', quotaEsgotataMsg: 'Puoi comprare un corso singolo adesso, oppure aspettare il rinnovo del prossimo ciclo.', quotaRenewsOn: 'Si rinnova il {date}.', btnBuySingleInstead: 'Compra un corso singolo',
+    quotaEsgotataTitle: 'Hai usato tutte le generazioni del mese', quotaEsgotataMsg: 'Puoi comprare un corso singolo adesso, oppure aspettare il rinnovo del prossimo ciclo.', quotaRenewsOn: 'Si rinnova il {date}.', btnBuySingleInstead: 'Compra un corso singolo', subPaymentFailedTitle: 'Non siamo riusciti ad addebitare il tuo abbonamento', subPaymentFailedMsg: 'Aggiorna il tuo metodo di pagamento per continuare a usare il piano Creator.', btnUpdatePayment: 'Aggiorna metodo di pagamento',
     shareAsImageButton: 'Condividi come immagine', generatingImageLabel: 'Un attimo...', generatingImageError: "Non è stato possibile generare l'immagine.",
     generatePublicLinkButton: 'Genera link pubblico', generatingLinkLabel: 'Un attimo...', generatingLinkError: 'Non è stato possibile generare il link pubblico.', publicLinkReadyLabel: 'Link pubblico pronto — copialo:',
     faqTitle: 'Domande frequenti',
@@ -1680,7 +1680,7 @@ const I18N = {
     planMensileTagline: '15 Complete courses per month, for frequent creators',
     mensileFeature1: '15 "Complete" generations included per month', mensileFeature2: 'Extra available as single purchase', mensileFeature3: 'Manage or cancel anytime',
     btnSubscribeMonthly: 'Subscribe', btnManageSubscription: 'Manage subscription', usedThisMonthLabel: 'used this month',
-    quotaEsgotataTitle: "You've used all your generations this month", quotaEsgotataMsg: 'You can buy a single course now, or wait for the next billing cycle.', quotaRenewsOn: 'Renews on {date}.', btnBuySingleInstead: 'Buy a single course',
+    quotaEsgotataTitle: "You've used all your generations this month", quotaEsgotataMsg: 'You can buy a single course now, or wait for the next billing cycle.', quotaRenewsOn: 'Renews on {date}.', btnBuySingleInstead: 'Buy a single course', subPaymentFailedTitle: "We couldn't charge your subscription", subPaymentFailedMsg: 'Update your payment method to keep using the Creator plan.', btnUpdatePayment: 'Update payment method',
     shareAsImageButton: 'Share as image', generatingImageLabel: 'One moment...', generatingImageError: 'Could not generate the image.',
     generatePublicLinkButton: 'Generate public link', generatingLinkLabel: 'One moment...', generatingLinkError: 'Could not generate the public link.', publicLinkReadyLabel: 'Public link ready — copy it:',
     faqTitle: 'Frequently asked questions',
@@ -1944,7 +1944,7 @@ const I18N = {
     planMensileTagline: '15 cursos Completo por mês, pra quem gera com frequência',
     mensileFeature1: '15 gerações "Completo" incluídas por mês', mensileFeature2: 'Extras disponíveis como compra avulsa', mensileFeature3: 'Gerencia ou cancela quando quiser',
     btnSubscribeMonthly: 'Assinar', btnManageSubscription: 'Gerenciar assinatura', usedThisMonthLabel: 'usados este mês',
-    quotaEsgotataTitle: 'Você usou todas as gerações do mês', quotaEsgotataMsg: 'Pode comprar um curso avulso agora, ou esperar a renovação do próximo ciclo.', quotaRenewsOn: 'Renova em {date}.', btnBuySingleInstead: 'Comprar um curso avulso',
+    quotaEsgotataTitle: 'Você usou todas as gerações do mês', quotaEsgotataMsg: 'Pode comprar um curso avulso agora, ou esperar a renovação do próximo ciclo.', quotaRenewsOn: 'Renova em {date}.', btnBuySingleInstead: 'Comprar um curso avulso', subPaymentFailedTitle: 'Não conseguimos cobrar sua assinatura', subPaymentFailedMsg: 'Atualiza seu método de pagamento pra continuar usando o Plano Creator.', btnUpdatePayment: 'Atualizar método de pagamento',
     shareAsImageButton: 'Compartilhar como imagem', generatingImageLabel: 'Só um instante...', generatingImageError: 'Não foi possível gerar a imagem.',
     generatePublicLinkButton: 'Gerar link público', generatingLinkLabel: 'Só um instante...', generatingLinkError: 'Não foi possível gerar o link público.', publicLinkReadyLabel: 'Link público pronto — copia aí:',
     faqTitle: 'Perguntas frequentes',
@@ -4472,6 +4472,20 @@ async function runGenerazioneGratis(prompt, btn, output, planLabel){
             escapeHtml(t.quotaEsgotataMsg || 'Puoi comprare un corso singolo adesso, oppure aspettare il rinnovo del prossimo ciclo.') +
             (errBody.renewsAt ? '<br>' + escapeHtml((t.quotaRenewsOn || 'Si rinnova il {date}').replace('{date}', new Date(errBody.renewsAt).toLocaleDateString(navigator.language))) : '') +
             '<br><button class="btn-secondary" style="margin-top:10px" onclick="selectPlan(\'completo\'); document.querySelector(\'.panel\').scrollIntoView({behavior:\'smooth\'});">' + escapeHtml(t.btnBuySingleInstead || 'Compra un corso singolo') + '</button>' +
+          '</div>';
+        return;
+      }
+
+      // FIX AUDITORIA: mensagem específica pra pagamento de assinatura
+      // recusado — sem isso, a pessoa cairia numa mensagem genérica de
+      // "crie conta"/"acabaram seus grátis" mesmo já sendo assinante,
+      // achando que o site "esqueceu" o plano dela.
+      if (errBody.error === 'pagamento_assinatura_falhou') {
+        output.innerHTML =
+          '<div class="error-box">' +
+            '<strong>' + escapeHtml(t.subPaymentFailedTitle || 'Non siamo riusciti ad addebitare il tuo abbonamento') + '</strong><br>' +
+            escapeHtml(t.subPaymentFailedMsg || 'Aggiorna il tuo metodo di pagamento per continuare a usare il piano Creator.') +
+            '<br><button class="btn-secondary" style="margin-top:10px" onclick="apriPortaleCliente()">' + escapeHtml(t.btnUpdatePayment || 'Aggiorna metodo di pagamento') + '</button>' +
           '</div>';
         return;
       }

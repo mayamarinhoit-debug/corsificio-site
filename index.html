@@ -4128,22 +4128,29 @@ async function proceedWithGeneration(prompt, flow, hasActiveSubscription, output
   }
 
   if (flow === 'free') {
-    const usedCount = getFreeUsageCount();
-    // Fix: il limite basato solo su localStorage era aggirabile cancellando i dati del browser.
-    // Ora concediamo 1 generazione totalmente anonima (bassa frizione per provare il prodotto),
-    // ma dalla 2a in poi richiediamo un account: questo non impedisce del tutto l'abuso (un utente
-    // può creare più account gratuiti), ma alza sensibilmente la frizione e apre la strada a un
-    // enforcement lato server basato su user_id Supabase — che resta il fix definitivo, da
-    // implementare nel backend (endpoint /genera dovrebbe verificare e incrementare un contatore
-    // legato all'account, non fidarsi del client).
+    // FIX AUDITORIA: confirma com o backend (fonte da verdade) antes de
+    // decidir — evita "achar" que ainda tem grátis (baseado só no
+    // localStorage) e descobrir só depois de esperar a geração que não tinha mais.
     const isLoggedIn = !!(supabaseClient && window.__corsificioSession);
-    if (usedCount >= 1 && !isLoggedIn) {
-      showFreeLimitReached(output, true);
+    const realStatus = await fetchRealFreeUsageStatus();
+    if (realStatus && !realStatus.allowed) {
+      showFreeLimitReached(output, !isLoggedIn && realStatus.isLoggedIn === false);
       return;
     }
-    if (usedCount >= FREE_COURSE_LIMIT) {
-      showFreeLimitReached(output, false);
-      return;
+    // Se por algum motivo não conseguimos confirmar com o backend (rede
+    // instável, etc), cai de volta pra checagem local — melhor deixar
+    // tentar (o backend vai recusar corretamente se for o caso) do que
+    // travar a pessoa por causa de uma checagem extra que falhou.
+    if (!realStatus) {
+      const usedCount = getFreeUsageCount();
+      if (usedCount >= 1 && !isLoggedIn) {
+        showFreeLimitReached(output, true);
+        return;
+      }
+      if (usedCount >= FREE_COURSE_LIMIT) {
+        showFreeLimitReached(output, false);
+        return;
+      }
     }
     await runGenerazioneGratis(prompt, btn, output);
   } else if (flow === 'paid-completo') {
@@ -4158,6 +4165,19 @@ async function proceedWithGeneration(prompt, flow, hasActiveSubscription, output
 // Chi cancella i dati del browser o usa un altro dispositivo riparte da zero — è un limite
 // "morbido" pensato per orientare verso l'acquisto, non una vera sicurezza anti-abuso.
 const FREE_COURSE_LIMIT = 3;
+
+// FIX AUDITORIA: consulta o estado real de cota gratuita no backend (banco
+// de dados), em vez de confiar só no contador local do navegador.
+async function fetchRealFreeUsageStatus(){
+  try {
+    const deviceId = getOrCreateDeviceId();
+    const response = await fetch(BACKEND_BASE + '/free-usage/stato?deviceId=' + encodeURIComponent(deviceId), {
+      headers: await buildAuthHeaders(),
+    });
+    if (!response.ok) return null;
+    return await response.json();
+  } catch (e) { return null; }
+}
 
 function getFreeUsageCount(){
   return parseInt(localStorage.getItem('corsificio_free_used') || '0', 10);

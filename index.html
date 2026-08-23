@@ -2760,7 +2760,15 @@ function normalizeCourse(course) {
   return {
     title: course.title || 'Corso senza titolo',
     subtitle: course.subtitle || '',
-    categoria: (course.categoria && typeof course.categoria === 'string') ? course.categoria.trim().toLowerCase() : 'generale',
+    // FIX: rede de segurança — se a IA devolver por engano uma palavra da
+    // vertical profissional (fitness/business/coaching) em vez de uma das 9
+    // categorias válidas de cor, mapeia pra uma equivalente sensata em vez
+    // de cair no tema cinza genérico.
+    categoria: (() => {
+      const raw = (course.categoria && typeof course.categoria === 'string') ? course.categoria.trim().toLowerCase() : 'generale';
+      const VERTICAL_TO_THEME_FALLBACK = { fitness: 'sport', business: 'finanza', coaching: 'spiritualita' };
+      return VERTICAL_TO_THEME_FALLBACK[raw] || raw;
+    })(),
     // Fix: questi tre campi venivano richiesti al modello (vedi buildPrompt) ma non erano
     // mai riportati nell'oggetto normalizzato, quindi il sales kit spariva prima del render.
     sales_pitch: (typeof course.sales_pitch === 'string') ? course.sales_pitch : '',
@@ -3887,7 +3895,7 @@ function buildPrompt(expertise, audience, goal, modules, tone, length, langName,
     coaching: `This course is for a professional coach. Use a reflective, empowering tone. Favor powerful open questions and accountability commitments over factual quizzes — frame "quiz_question" as a commitment/action the learner will report back on.`,
   };
   const verticalInstruction = (usage === 'professionale' && vertical && VERTICAL_INSTRUCTIONS[vertical])
-    ? `\n${VERTICAL_INSTRUCTIONS[vertical]}`
+    ? `\n${VERTICAL_INSTRUCTIONS[vertical]} (Note: this vertical context is ONLY for tone/style/quiz-type guidance — it has NO effect on the required "categoria" field below, which must still be chosen strictly from its own fixed list.)`
     : '';
 
   const deliveryTipField = usage === 'professionale'

@@ -3936,6 +3936,8 @@ Final goal for the learner: ${goal || "not specified, infer something sensible"}
 Number of modules requested: ${modules}
 Tone: ${tone}${materialBlock}
 
+CRITICAL — this must read as ONE COHESIVE COURSE with a real teaching arc, NOT a set of independent articles on the same broad topic (that is the single most common failure mode to avoid): before writing, decide the ONE concrete end-state skill/outcome the learner reaches by the final module. Every module must visibly move the learner ONE STEP closer to that end-state, in a strict dependency order — module 2 should explicitly build on a term, concept or result introduced in module 1 (a brief callback, e.g. "building on the method from the last module..."), module 3 on module 1-2, and so on. THE CHALLENGE at the end of each module should feel like consecutive steps of ONE ongoing hands-on project the learner is assembling across the whole course, not disconnected one-off exercises. Never repeat the same explanation, example or key point across two modules — if a concept resurfaces, reference it briefly instead of re-explaining it from scratch.
+
 Generate a complete micro-course. Write ALL content (title, subtitle, module titles, summaries, content, key points, quiz${usage === 'professionale' ? ', sales pitch, price suggestion, FAQ, delivery tips' : ''}) entirely in ${langName}. Respond ONLY with a valid JSON object, no text before or after, no markdown, with this exact structure:
 {
   "title": "catchy course title, in ${langName}",

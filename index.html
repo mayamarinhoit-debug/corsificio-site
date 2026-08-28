@@ -363,6 +363,7 @@ h1.title em{
 }
 .panel textarea{ resize: vertical; min-height: 64px; font-family:'Nunito Sans', sans-serif; }
 .row2{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 420px){ .row2{ grid-template-columns: 1fr; } }
 
 .btn-generate{
   width:100%;
@@ -476,7 +477,12 @@ h1.title em{
 @keyframes stampIn{
   to{ opacity:1; transform: translateY(0); }
 }
-.card-num-row{ display:flex; align-items:center; gap:10px; margin-bottom: 14px; position:relative; z-index:1; }
+.card-num-row{ display:flex; align-items:center; gap:10px; margin-bottom: 14px; position:relative; z-index:1; flex-wrap:wrap; }
+@media (max-width: 480px){
+  .card-num-row{ gap:6px 8px; }
+  .module-regenerate-btn{ margin-left:0; }
+  .module-regenerate-btn, .module-social-btn{ font-size:10.5px; padding:5px 8px; }
+}
 .module-regenerate-btn{
   margin-left:auto; font-family:'Nunito Sans', sans-serif; font-size:11px; font-weight:600;
   color:var(--ink-dim); background:var(--surface-2); border:1px solid var(--line); border-radius:999px;
@@ -614,6 +620,15 @@ h1.title em{
   margin: 0 auto;
   padding: 13px 24px;
 }
+
+.further-reading-block{
+  background: var(--surface-2); border:1px solid var(--line); border-radius:14px;
+  padding:18px 20px; margin:22px 0 0;
+}
+.further-reading-block h4{ font-family:'Lora', serif; font-size:14.5px; color:var(--ink); margin:0 0 6px; }
+.further-reading-disclaimer{ font-size:11px; color:var(--ink-dim); font-style:italic; margin:0 0 10px; }
+.further-reading-list{ margin:0; padding-left:20px; }
+.further-reading-list li{ font-size:13px; color:var(--ink); line-height:1.6; margin-bottom:4px; }
 
 .sales-kit{
   background: var(--surface);
@@ -1157,7 +1172,7 @@ h1.title em{
 }
 
 .plan-picker{
-  display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; margin-top:2px;
+  display:grid; grid-template-columns: repeat(2, 1fr); gap:8px; margin-top:2px;
 }
 @media (max-width: 420px){
   .plan-picker{ grid-template-columns: 1fr; }
@@ -1470,6 +1485,10 @@ h1.title em{
           <span class="plan-pill-name" data-i18n="pillProName">Professionale</span>
           <span class="plan-pill-price" data-i18n="priceProValue">€4,99</span>
         </button>
+        <button type="button" class="plan-pill" data-plan="creator" id="plan-pill-creator" onclick="selectPlan('creator')">
+          <span class="plan-pill-name" data-i18n="planMensileName">Piano Creator</span>
+          <span class="plan-pill-price">€19,90<span data-i18n="perMonthLabel">/mese</span></span>
+        </button>
       </div>
       <p class="plan-picker-note" id="plan-picker-note" data-i18n="planFreeTagline">Un assaggio veloce, senza carta di credito</p>
 
@@ -1521,8 +1540,6 @@ h1.title em{
   <div class="showcase-panel" id="showcase-panel"></div>
 
   <div class="sample-preview reveal" id="sample-preview"></div>
-
-  <div class="plan-cards reveal" id="plan-cards"></div>
 
   <div class="about-section reveal" id="about-section"></div>
 
@@ -1621,7 +1638,7 @@ const I18N = {
     loadingMessages: ['Sto strutturando il corso…', 'Sto scrivendo i moduli…', 'Sto rifinendo i dettagli…'],
     emptyState: 'Compila i campi a sinistra e premi "Genera il corso". Qui apparirà la struttura completa, modulo per modulo.',
     errorFillFields: "Inserisci almeno l'argomento e il pubblico del corso.", regenerateModuleBtn: 'Rigenera', regenerateModuleTip: 'Rigenera questo modulo con IA, senza toccare gli altri', regeneratingLabel: 'Un attimo...', regenerateErrorLabel: 'Errore, riprova', copyModuleSocialBtn: 'Per i social', copyModuleSocialTip: 'Copia questo modulo in formato breve per i social', socialPostCourseCredit: 'Corso completo: ',
-    translateToggleLabel: 'Genera anche in altre lingue', btnTranslateNow: 'Traduci', translateMaxLangs: 'Puoi selezionare fino a 3 lingue per volta.', translatingLabel: 'Traduzione in corso:', translateError: 'Errore traducendo in', translateDoneLabel: 'Fatto!', translateTabsLabel: 'Versioni:', translateOriginalLabel: 'Originale', verifiedBadgeLabel: 'Certificato verificato', quizScoreLabel: 'al quiz', issuedByLabel: 'Rilasciato da', errorFillMaterial: 'Incolla almeno qualche riga di materiale (minimo 40 caratteri).', modeTopicBtn: '✏️ Descrivi un argomento', modeMaterialBtn: '📄 Incolla il tuo materiale', labelMaterial: 'Le tue note, appunti o testo di partenza', phMaterial: "Incolla qui appunti, una bozza, il testo di una lezione già fatta... l'IA li trasforma in un corso strutturato.", labelUploadFile: 'Oppure carica un file (.pdf, .txt)', fileReading: 'Leggendo il file...', fileReadOk: 'File caricato — puoi modificare il testo qui sotto.', fileReadError: 'Non è stato possibile leggere il file. Prova a incollare il testo direttamente.', errorNetworkFriendly: 'Non riusciamo a raggiungere il server. Controlla la tua connessione e riprova tra poco.',
+    translateToggleLabel: 'Genera anche in altre lingue', moreActionsToggle: 'Altre azioni (traduzioni, condividi)', furtherReadingLabel: 'Punti di partenza per approfondire', furtherReadingDisclaimer: "Suggerimenti generali, non fonti usate per generare questo corso — l'IA non fa ricerche in tempo reale.", btnTranslateNow: 'Traduci', translateMaxLangs: 'Puoi selezionare fino a 3 lingue per volta.', translatingLabel: 'Traduzione in corso:', translateError: 'Errore traducendo in', translateDoneLabel: 'Fatto!', translateTabsLabel: 'Versioni:', translateOriginalLabel: 'Originale', verifiedBadgeLabel: 'Certificato verificato', quizScoreLabel: 'al quiz', issuedByLabel: 'Rilasciato da', errorFillMaterial: 'Incolla almeno qualche riga di materiale (minimo 40 caratteri).', modeTopicBtn: '✏️ Descrivi un argomento', modeMaterialBtn: '📄 Incolla il tuo materiale', labelMaterial: 'Le tue note, appunti o testo di partenza', phMaterial: "Incolla qui appunti, una bozza, il testo di una lezione già fatta... l'IA li trasforma in un corso strutturato.", labelUploadFile: 'Oppure carica un file (.pdf, .txt)', fileReading: 'Leggendo il file...', fileReadOk: 'File caricato — puoi modificare il testo qui sotto.', fileReadError: 'Non è stato possibile leggere il file. Prova a incollare il testo direttamente.', errorNetworkFriendly: 'Non riusciamo a raggiungere il server. Controlla la tua connessione e riprova tra poco.',
     courseGeneratedLabel: 'Micro-corso generato', premiumSuffix: ' — Premium', modulePrefix: 'Modulo', quizLabel: 'Verifica di apprendimento',
     copyButton: 'Copia come testo', copiedButton: 'Copiato ✓', retryButton: 'RIPROVA',
     errorPrefix: 'Non sono riuscito a generare il corso: ', errorPaymentStartPrefix: 'Non sono riuscito ad avviare il pagamento: ', errorPremiumPrefix: 'Non sono riuscito a generare il corso premium: ',
@@ -1705,7 +1722,7 @@ const I18N = {
     loadingMessages: ['Structuring the course…', 'Writing the modules…', 'Polishing the details…'],
     emptyState: 'Fill in the fields on the left and press "Generate course". The full structure will appear here, module by module.',
     errorFillFields: 'Please enter at least the topic and the audience for the course.', regenerateModuleBtn: 'Regenerate', regenerateModuleTip: 'Regenerate this module with AI, without touching the others', regeneratingLabel: 'One moment...', regenerateErrorLabel: 'Error, try again', copyModuleSocialBtn: 'For social', copyModuleSocialTip: 'Copy this module in a short format for social media', socialPostCourseCredit: 'Full course: ',
-    translateToggleLabel: 'Also generate in other languages', btnTranslateNow: 'Translate', translateMaxLangs: 'You can select up to 3 languages at a time.', translatingLabel: 'Translating:', translateError: 'Error translating to', translateDoneLabel: 'Done!', translateTabsLabel: 'Versions:', translateOriginalLabel: 'Original', verifiedBadgeLabel: 'Verified certificate', quizScoreLabel: 'on quiz', issuedByLabel: 'Issued by', errorFillMaterial: 'Paste at least a few lines of material (minimum 40 characters).', modeTopicBtn: '✏️ Describe a topic', modeMaterialBtn: '📄 Paste your material', labelMaterial: 'Your notes, draft, or source text', phMaterial: "Paste notes, a draft, or the text of a lesson you've already written... the AI turns it into a structured course.", labelUploadFile: 'Or upload a file (.pdf, .txt)', fileReading: 'Reading file...', fileReadOk: "File loaded — you can edit the text below.", fileReadError: "Couldn't read the file. Try pasting the text directly.", errorNetworkFriendly: "We can't reach the server right now. Check your connection and try again shortly.",
+    translateToggleLabel: 'Also generate in other languages', moreActionsToggle: 'More actions (translations, share)', furtherReadingLabel: 'Starting points to go deeper', furtherReadingDisclaimer: "General suggestions, not sources used to generate this course — the AI doesn't do real-time research.", btnTranslateNow: 'Translate', translateMaxLangs: 'You can select up to 3 languages at a time.', translatingLabel: 'Translating:', translateError: 'Error translating to', translateDoneLabel: 'Done!', translateTabsLabel: 'Versions:', translateOriginalLabel: 'Original', verifiedBadgeLabel: 'Verified certificate', quizScoreLabel: 'on quiz', issuedByLabel: 'Issued by', errorFillMaterial: 'Paste at least a few lines of material (minimum 40 characters).', modeTopicBtn: '✏️ Describe a topic', modeMaterialBtn: '📄 Paste your material', labelMaterial: 'Your notes, draft, or source text', phMaterial: "Paste notes, a draft, or the text of a lesson you've already written... the AI turns it into a structured course.", labelUploadFile: 'Or upload a file (.pdf, .txt)', fileReading: 'Reading file...', fileReadOk: "File loaded — you can edit the text below.", fileReadError: "Couldn't read the file. Try pasting the text directly.", errorNetworkFriendly: "We can't reach the server right now. Check your connection and try again shortly.",
     courseGeneratedLabel: 'Generated micro-course', premiumSuffix: ' — Premium', modulePrefix: 'Module', quizLabel: 'Knowledge check',
     copyButton: 'Copy as text', copiedButton: 'Copied ✓', retryButton: 'RETRY',
     errorPrefix: "Couldn't generate the course: ", errorPaymentStartPrefix: "Couldn't start the payment: ", errorPremiumPrefix: "Couldn't generate the premium course: ",
@@ -1969,7 +1986,7 @@ const I18N = {
     loadingMessages: ['Estruturando o curso…', 'Escrevendo os módulos…', 'Ajustando os detalhes…'],
     emptyState: 'Preencha os campos à esquerda e clique em "Gerar curso". Aqui vai aparecer a estrutura completa, módulo por módulo.',
     errorFillFields: 'Informe ao menos o tema e o público do curso.', regenerateModuleBtn: 'Regenerar', regenerateModuleTip: 'Regenera só esse módulo com IA, sem mexer nos outros', regeneratingLabel: 'Só um instante...', regenerateErrorLabel: 'Erro, tenta de novo', copyModuleSocialBtn: 'Pras redes', copyModuleSocialTip: 'Copia esse módulo em formato curto pras redes sociais', socialPostCourseCredit: 'Curso completo: ',
-    translateToggleLabel: 'Gerar também em outros idiomas', btnTranslateNow: 'Traduzir', translateMaxLangs: 'Pode selecionar até 3 idiomas por vez.', translatingLabel: 'Traduzindo:', translateError: 'Erro traduzindo pra', translateDoneLabel: 'Pronto!', translateTabsLabel: 'Versões:', translateOriginalLabel: 'Original', verifiedBadgeLabel: 'Certificado verificado', quizScoreLabel: 'no quiz', issuedByLabel: 'Emitido por', errorFillMaterial: 'Cola pelo menos algumas linhas de material (mínimo 40 caracteres).', modeTopicBtn: '✏️ Descrever um tema', modeMaterialBtn: '📄 Colar seu material', labelMaterial: 'Suas anotações, rascunho ou texto de partida', phMaterial: 'Cola aqui anotações, um rascunho, o texto de uma aula que você já deu... a IA transforma isso num curso estruturado.', labelUploadFile: 'Ou envia um arquivo (.pdf, .txt)', fileReading: 'Lendo o arquivo...', fileReadOk: 'Arquivo carregado — você pode editar o texto abaixo.', fileReadError: 'Não foi possível ler o arquivo. Tenta colar o texto direto.', errorNetworkFriendly: 'Não conseguimos falar com o servidor agora. Confira sua conexão e tente de novo daqui a pouco.',
+    translateToggleLabel: 'Gerar também em outros idiomas', moreActionsToggle: 'Mais ações (traduções, compartilhar)', furtherReadingLabel: 'Pontos de partida pra aprofundar', furtherReadingDisclaimer: 'Sugestões gerais, não fontes usadas pra gerar esse curso — a IA não pesquisa em tempo real.', btnTranslateNow: 'Traduzir', translateMaxLangs: 'Pode selecionar até 3 idiomas por vez.', translatingLabel: 'Traduzindo:', translateError: 'Erro traduzindo pra', translateDoneLabel: 'Pronto!', translateTabsLabel: 'Versões:', translateOriginalLabel: 'Original', verifiedBadgeLabel: 'Certificado verificado', quizScoreLabel: 'no quiz', issuedByLabel: 'Emitido por', errorFillMaterial: 'Cola pelo menos algumas linhas de material (mínimo 40 caracteres).', modeTopicBtn: '✏️ Descrever um tema', modeMaterialBtn: '📄 Colar seu material', labelMaterial: 'Suas anotações, rascunho ou texto de partida', phMaterial: 'Cola aqui anotações, um rascunho, o texto de uma aula que você já deu... a IA transforma isso num curso estruturado.', labelUploadFile: 'Ou envia um arquivo (.pdf, .txt)', fileReading: 'Lendo o arquivo...', fileReadOk: 'Arquivo carregado — você pode editar o texto abaixo.', fileReadError: 'Não foi possível ler o arquivo. Tenta colar o texto direto.', errorNetworkFriendly: 'Não conseguimos falar com o servidor agora. Confira sua conexão e tente de novo daqui a pouco.',
     courseGeneratedLabel: 'Micro-curso gerado', premiumSuffix: ' — Premium', modulePrefix: 'Módulo', quizLabel: 'Verificação de aprendizado',
     copyButton: 'Copiar como texto', copiedButton: 'Copiado ✓', retryButton: 'TENTAR NOVAMENTE',
     errorPrefix: 'Não consegui gerar o curso: ', errorPaymentStartPrefix: 'Não consegui iniciar o pagamento: ', errorPremiumPrefix: 'Não consegui gerar o curso premium: ',
@@ -2244,7 +2261,6 @@ function applyLanguage(lang){
   document.documentElement.setAttribute('dir', currentLang === 'ar' ? 'rtl' : 'ltr');
   updateHintText();
   populateExampleChips();
-  renderPlanCards();
   renderAboutSection();
   renderShowcase();
   renderStatsStrip();
@@ -2446,82 +2462,6 @@ function getCheckoutCurrencyBucket(){
   return currency === 'USD' ? 'USD' : 'EUR';
 }
 
-function renderPlanCards(){
-  const t = I18N[currentLang];
-  const container = document.getElementById('plan-cards');
-  if (!container) return;
-
-  function featureList(features){
-    return '<ul class="plan-card-features">' + features.map(f => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>';
-  }
-
-  let html = '';
-  html += '<div class="plan-cards-title">' + t.planCardsTitle + '</div>';
-  html += '<div class="plan-cards-sub">' + t.planCardsSub + '</div>';
-
-  html += '<div class="plan-card" onclick="selectPlanFromCard(\'free\')" role="button" tabindex="0">';
-  html += '<div class="plan-card-name">' + t.planFreeName + '</div>';
-  html += '<div class="plan-card-tag">' + t.priceFreeValue + '</div>';
-  html += '<div class="plan-card-tagline">' + t.planFreeTagline + '</div>';
-  html += featureList(t.planFreeFeatures);
-  html += '</div>';
-
-  html += '<div class="plan-card" onclick="selectPlanFromCard(\'completo\')" role="button" tabindex="0">';
-  html += '<div class="plan-card-name">' + t.planCompletoName + '</div>';
-  html += '<div class="plan-card-tag">' + t.priceCompletoValue + '<span class="plan-card-tag-local">' + estimateLocalPrice(3.49) + '</span></div>';
-  html += '<div class="plan-card-tagline">' + t.planCompletoTagline + '</div>';
-  html += featureList(t.planCompletoFeatures);
-  html += '</div>';
-
-  html += '<div class="plan-card featured" onclick="selectPlanFromCard(\'pro\')" role="button" tabindex="0">';
-  html += '<div class="plan-card-badge">' + (t.planProBadge || t.planProName) + '</div>';
-  html += '<div class="plan-card-name">' + t.planProName + '</div>';
-  html += '<div class="plan-card-tag">' + t.priceProValue + '<span class="plan-card-tag-local">' + estimateLocalPrice(4.99) + '</span></div>';
-  html += '<div class="plan-card-tagline">' + t.planProTagline + '</div>';
-  html += featureList(t.planProFeatures);
-  html += '</div>';
-
-  // FIX PRODUTO 1: card do plano recorrente, ao lado dos existentes — nenhum
-  // dos outros 3 planos foi removido ou alterado.
-  html += '<div class="plan-card" id="plan-card-abbonamento">';
-  html += '<div class="plan-card-name">' + escapeHtml(t.planMensileName || 'Professionale Mensile') + '</div>';
-  html += '<div class="plan-card-tag">' + escapeHtml(t.priceMensileValue || '€19,90') + '<span class="plan-card-tag-local">' + estimateLocalPrice(19.90) + '</span><span class="plan-card-tag-period">' + escapeHtml(t.perMonthLabel || '/mese') + '</span></div>';
-  html += '<div class="plan-card-tagline">' + escapeHtml(t.planMensileTagline || '15 corsi Completo al mese, per chi genera con frequenza') + '</div>';
-  html += featureList(t.planMensileFeatures || [
-    (t.mensileFeature1 || '15 generazioni "Completo" incluse al mese'),
-    (t.mensileFeature2 || 'Extra disponibili come acquisto singolo'),
-    (t.mensileFeature3 || 'Gestisci o cancella quando vuoi'),
-  ]);
-  html += '<button type="button" class="btn-secondary" id="btn-abbonamento" onclick="avviaAbbonamento()">' + escapeHtml(t.btnSubscribeMonthly || 'Abbonati') + '</button>';
-  html += '<div id="subscription-status-note" class="subscription-status-note"></div>';
-  html += '</div>';
-
-  html += '<div class="trust-bar">';
-  html += '<div class="trust-item">' + ICONS.lock + '<span>' + escapeHtml(t.trustSecure) + '</span></div>';
-  html += '<div class="trust-item">' + ICONS.noSub + '<span>' + escapeHtml(t.trustNoSub) + '</span></div>';
-  html += '<div class="trust-item">' + ICONS.refund + '<span>' + escapeHtml(t.trustRefund) + '</span></div>';
-  html += '</div>';
-
-  if (estimateLocalPrice(1) || detectLocalCurrency()) {
-    html += '<div class="currency-note">' + t.currencyNote + '</div>';
-  }
-
-  container.innerHTML = html;
-
-  // Depois de renderizar, busca o status real da assinatura (se logado) e
-  // troca o botão "Abbonati" por informação de uso + link pro portal.
-  fetchSubscriptionStatus().then(status => {
-    if (!status || !status.active) return;
-    window.__activeSubscription = status; // FIX: cache pra generateCourse() checar sem round-trip extra
-    const btn = document.getElementById('btn-abbonamento');
-    const note = document.getElementById('subscription-status-note');
-    if (btn) { btn.textContent = t.btnManageSubscription || 'Gestisci abbonamento'; btn.onclick = apriPortaleCliente; }
-    if (note) {
-      note.textContent = (status.usedCount ?? 0) + '/' + status.monthlyQuota + ' ' + (t.usedThisMonthLabel || 'usati questo mese');
-    }
-  });
-}
-
 function populateExampleChips(){
   const t = I18N[currentLang];
   const container = document.getElementById('example-chips');
@@ -2547,21 +2487,17 @@ function toggleMoreDetails(evt){
   if (hint) hint.style.display = isHidden ? 'none' : 'block';
 }
 
-// FIX: os cards de plano na tela de preços eram só decorativos — clicar
-// neles não fazia nada. Agora clicar em qualquer lugar do card (Gratis,
-// Completo, Professionale) leva até o formulário de geração já com aquele
-// plano selecionado, exatamente como o texto do card promete.
-function selectPlanFromCard(plan){
-  const panel = document.querySelector('.panel');
-  if (panel) panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  selectPlan(plan);
-  setTimeout(() => {
-    const input = document.getElementById('f-expertise');
-    if (input) input.focus();
-  }, 400);
-}
-
 function selectPlan(plan){
+  // FIX (auditoria de design): "Piano Creator" não é um nível de conteúdo
+  // como os outros 3 — é uma assinatura de verdade. Clicar nele dispara o
+  // checkout direto, sem ficar marcado como "selecionado" (senão a pessoa
+  // acharia que só precisa clicar em "Genera" depois, mas na real ele já
+  // redireciona pro pagamento).
+  if (plan === 'creator') {
+    avviaAbbonamento();
+    return;
+  }
+
   const lengthField = document.getElementById('f-length');
   const usageField = document.getElementById('f-usage');
   if (plan === 'free'){ lengthField.value = 'sintetico'; usageField.value = 'generale'; }
@@ -2774,6 +2710,10 @@ function normalizeCourse(course) {
     sales_pitch: (typeof course.sales_pitch === 'string') ? course.sales_pitch : '',
     suggested_price_range: (typeof course.suggested_price_range === 'string') ? course.suggested_price_range : '',
     faq: Array.isArray(course.faq) ? course.faq.filter(f => f && f.question && f.answer) : [],
+    // FIX: sugestões honestas de aprofundamento — nunca "fontes usadas",
+    // só pontos de partida pra continuar estudando (ver instrução no prompt
+    // contra invenção de citações específicas).
+    further_reading: Array.isArray(course.further_reading) ? course.further_reading.filter(Boolean).slice(0, 4) : [],
     modules: Array.isArray(course.modules) ? course.modules.map(m => ({
       title: (m && m.title) || 'Modulo senza titolo',
       summary: (m && m.summary) || '',
@@ -3348,9 +3288,11 @@ async function refreshAccountUI(){
     accountBtn.textContent = '👤✓';
     accountContent.innerHTML =
       '<p class="sidebar-note">' + escapeHtml(session.user.email) + '</p>' +
+      '<div id="sidebar-subscription-status"></div>' +
       '<button class="btn-secondary" onclick="handleSignOut()" data-i18n="btnLogout">' + t.btnLogout + '</button>' +
       '<a href="#" class="delete-account-link" onclick="handleDeleteAccount(event)" data-i18n="btnDeleteAccount">' + escapeHtml(t.btnDeleteAccount || 'Elimina il mio account') + '</a>';
     loadMyCourses();
+    renderSidebarSubscriptionStatus(); // FIX (auditoria de design): status da assinatura mora aqui agora, não numa seção de marketing separada
   } else {
     accountBtn.textContent = '👤';
     accountContent.innerHTML =
@@ -3953,10 +3895,12 @@ Generate a complete micro-course. Write ALL content (title, subtitle, module tit
       "quiz_question": "a relevant check-in question, in ${langName}, that verifies the learner actually did THE CHALLENGE step or understood THE CONCEPT — this is the module's required fixation/retention tool",
       "quiz_answer": "short correct answer, in ${langName}"${deliveryTipField}
     }
-  ]${salesKitBlock}
+  ]${salesKitBlock},
+  "further_reading": ["suggestion 1, in ${langName}", "suggestion 2, in ${langName}", "suggestion 3, in ${langName}"]
 }
 The "modules" field must contain exactly ${modules} items, in a logical teaching order from beginner to advanced.
-The "content" field MUST always be present and non-empty for every module, and MUST follow the 5-part Hook/Concept/Step-by-step/Example/Challenge structure described above.`;
+The "content" field MUST always be present and non-empty for every module, and MUST follow the 5-part Hook/Concept/Step-by-step/Example/Challenge structure described above.
+The "further_reading" field: 3 short, HONEST pointers (in ${langName}) for where the learner could explore the topic further AFTER this course — NOT a bibliography and NOT a claim that this course was built from external research (it was not). Strongly prefer generic, safe pointers like "search for '[specific well-known term/technique]' to go deeper" or naming a genuinely famous, unmistakably real book/course/organization in this field if you are highly confident it exists. NEVER invent a specific paper title, study, statistic, author name, or URL you are not certain is real — if in doubt, give a generic search suggestion instead of a specific citation.`;
 }
 
 function buildPreviewPrompt(expertise, audience, goal, modules, tone, langName, usage) {
@@ -4300,7 +4244,8 @@ async function avviaPagamento(plan, prompt, btn, output){
 // avviaPagamento, mas mode=subscription no backend).
 async function avviaAbbonamento(){
   const t = I18N[currentLang];
-  const btn = document.getElementById('btn-abbonamento');
+  const btn = document.getElementById('btn-abbonamento') || document.getElementById('plan-pill-creator');
+  const originalBtnHtml = btn ? btn.innerHTML : null;
   if (btn) { btn.disabled = true; btn.textContent = t.btnRedirecting; }
   try {
     if (!window.__corsificioSession) {
@@ -4319,7 +4264,7 @@ async function avviaAbbonamento(){
         if (confirm(t.subscriptionAlreadyActiveMsg || 'Hai già un abbonamento attivo. Vuoi aprire la gestione abbonamento?')) {
           apriPortaleCliente();
         }
-        if (btn) { btn.disabled = false; btn.textContent = t.btnManageSubscription || 'Gestisci abbonamento'; }
+        if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHtml || (t.btnManageSubscription || 'Gestisci abbonamento'); }
         return;
       }
       throw new Error(errBody.error || ("Richiesta non riuscita (" + response.status + ")"));
@@ -4329,7 +4274,7 @@ async function avviaAbbonamento(){
     window.location.href = data.url;
   } catch (err) {
     alert(friendlyErrorMessage(err, t));
-    if (btn) { btn.disabled = false; btn.textContent = t.btnSubscribeMonthly || 'Abbonati'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = originalBtnHtml || (t.btnSubscribeMonthly || 'Abbonati'); }
   }
 }
 
@@ -4362,6 +4307,25 @@ async function fetchSubscriptionStatus(){
     if (!response.ok) return null;
     return await response.json();
   } catch (e) { return null; }
+}
+
+// FIX (auditoria de design): mostra o status da assinatura (uso/cota, ou
+// botão de assinar) dentro da própria barra lateral da conta — antes vivia
+// espalhado numa seção de marketing separada no meio da página.
+async function renderSidebarSubscriptionStatus(){
+  const el = document.getElementById('sidebar-subscription-status');
+  if (!el) return;
+  const t = I18N[currentLang];
+  const status = await fetchSubscriptionStatus();
+  window.__activeSubscription = status;
+  if (status && status.active) {
+    el.innerHTML =
+      '<p class="sidebar-note">' + escapeHtml(t.planMensileName || 'Piano Creator') + ' — ' +
+      (status.usedCount ?? 0) + '/' + status.monthlyQuota + ' ' + escapeHtml(t.usedThisMonthLabel || 'usati questo mese') + '</p>' +
+      '<button class="btn-secondary" onclick="apriPortaleCliente()">' + escapeHtml(t.btnManageSubscription || 'Gestisci abbonamento') + '</button>';
+  } else {
+    el.innerHTML = '<a href="#" class="more-details-toggle" style="display:block;" onclick="event.preventDefault(); avviaAbbonamento();">🌟 ' + escapeHtml(t.sidebarSubscribeCta || 'Passa al Piano Creator (€19,90/mese)') + '</a>';
+  }
 }
 
 // FIX PRODUTO (vertical por nicho): carrega a vertical salva (se logado) e
@@ -4710,7 +4674,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const t = I18N[currentLang];
     setTimeout(() => {
       alert(t.subscriptionActivatedMsg || 'Abbonamento attivato! Puoi generare i tuoi corsi ora.');
-      renderPlanCards();
+      renderSidebarSubscriptionStatus();
     }, 300);
     return;
   }
@@ -4882,6 +4846,14 @@ const TRANSLATE_LANG_LIST = [
 window.__courseTranslations = {};
 window.__activeTranslationLang = null;
 
+// FIX (auditoria de design): agrupa ações secundárias (tradução, compartilhar)
+// num só bloco recolhido, pra não competir visualmente com o que importa.
+function toggleMoreActions(evt){
+  evt.preventDefault();
+  const block = document.getElementById('more-actions-block');
+  if (block) block.style.display = block.style.display === 'none' ? 'block' : 'none';
+}
+
 function toggleTranslatePanel(evt){
   evt.preventDefault();
   const body = document.getElementById('translate-panel-body');
@@ -5020,6 +4992,20 @@ function renderCourse(course, isPremium){
   });
   html += '</div>';
 
+  // FIX: sugestões honestas de aprofundamento — rótulo deixa claro que são
+  // pontos de partida pra continuar estudando, NUNCA "fontes usadas" pra
+  // montar o curso (a IA não pesquisa ao vivo, então afirmar isso seria
+  // enganoso).
+  if (course.further_reading && course.further_reading.length) {
+    html += '<div class="further-reading-block">';
+    html += '<h4>' + escapeHtml(t.furtherReadingLabel || 'Punti di partenza per approfondire') + '</h4>';
+    html += '<p class="further-reading-disclaimer">' + escapeHtml(t.furtherReadingDisclaimer || "Suggerimenti generali, non fonti usate per generare questo corso — l'IA non fa ricerche in tempo reale.") + '</p>';
+    html += '<ul class="further-reading-list">';
+    course.further_reading.forEach(item => { html += '<li>' + escapeHtml(item) + '</li>'; });
+    html += '</ul>';
+    html += '</div>';
+  }
+
   if (course.sales_pitch || course.suggested_price_range || (course.faq && course.faq.length)) {
     html += '<div class="sales-kit">';
     html += '<div class="course-head" style="margin-bottom:16px;"><div class="eyebrow">' + t.salesKitLabel + '</div></div>';
@@ -5047,6 +5033,13 @@ function renderCourse(course, isPremium){
   }
   html += '</div>';
 
+  // FIX (auditoria de design): antes, tradução + compartilhar ficavam como
+  // 2 blocos sempre visíveis embaixo das ações principais — competindo com
+  // o que realmente importa (baixar/copiar/fazer o quiz). Agora entram num
+  // único bloco secundário, recolhido por padrão, sem sumir de vez.
+  html += '<a href="#" class="more-details-toggle" id="more-actions-toggle" onclick="toggleMoreActions(event)">⋯ ' + escapeHtml(t.moreActionsToggle || 'Altre azioni (traduzioni, condividi)') + '</a>';
+  html += '<div id="more-actions-block" style="display:none;">';
+
   // FIX PRODUTO 5: tradução simultânea — só faz sentido pra planos pagos
   // (Completo/Professionale/assinatura), já que cada idioma extra tem custo
   // real de IA. Reaproveita a estrutura já gerada em vez de criar do zero.
@@ -5069,6 +5062,8 @@ function renderCourse(course, isPremium){
   html += '<button class="icon-btn share-btn" onclick="shareCourse(\'linkedin\')" title="LinkedIn" aria-label="Condividi su LinkedIn">' + ICONS.linkedin + '</button>';
   html += '<button class="icon-btn share-btn" onclick="shareCourse(\'copy\')" title="' + escapeHtml(t.shareCopyLink) + '" aria-label="' + escapeHtml(t.shareCopyLink) + '">' + ICONS.link + '</button>';
   html += '</div>';
+
+  html += '</div>'; // fecha #more-actions-block
 
   output.innerHTML = html;
   window.__lastCourse = course;
